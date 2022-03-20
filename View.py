@@ -60,7 +60,7 @@ class View:
                     rows = rows + symbols[None] + "|"
         rows += "\n ____ ____ ____ ____ ____ ____ ____"
         rows += "\n   I   II  III   IV    V   VI  VII"
-        return print(self.welcome_string + rows, end="\r")
+        return print(self.welcome_string + rows)
 
     @staticmethod
     def choose_column():
