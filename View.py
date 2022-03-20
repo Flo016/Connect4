@@ -7,7 +7,6 @@ class View:
         """saves reoccurring questions or valid inputs"""
         self.yes_no = ["Y", "y", "YES", "YEs", "Yes", "yes", "N", "n", "NO", "No", "no"]
         self.true = ["Y", "y", "YES", "YEs", "Yes", "yes"]
-        self.false = self.yes_no not in self.true
         self.lastPrintedLines = 0   # tracks how many lines have been printed since last print.
         self.save_games = []
 

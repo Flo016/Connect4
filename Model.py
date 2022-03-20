@@ -1,3 +1,6 @@
+import random
+
+
 class Connect4:
     """ Creates a game of Connect 4 with functions to interact with the game"""
 
@@ -10,6 +13,7 @@ class Connect4:
         self.players = []  # stores player objects
         self.current_player = 0
         self.tokens = 0
+        self.best_column = None
 
     class Player:
         """ Creates a Player instance with ID and a PlayerToken Symbol"""
@@ -32,10 +36,48 @@ class Connect4:
         self.current_player = (self.current_player + 1) % 2
         return True
 
-    def check_draw(self, tokens: int) -> bool:
-        if tokens == (self.rows * self.columns):
+    def check_draw(self) -> bool:
+        if self.tokens == (self.rows * self.columns):
             return True
         return False
+
+    def AI_make_turn(self):
+        """
+        if check_win(connect4):
+            if is_maximising:
+                return 1
+            return -1
+        if connect4.check_draw():
+            return 0
+
+        if is_maximising:
+
+            best_move = -100000   # make sure that this value is overwritten
+            for i in range(len(connect4.playingField)):
+                if not connect4.play_turn(i):   # AI cannot make this turn
+                    continue
+                current_score = connect4.AI_make_turn(connect4, False)
+                connect4.playingField[i] = connect4.playingField[i][:-1]
+                best_move2 = max(best_move, current_score)
+                if best_move != best_move2:
+                    self.best_column = i
+                    best_move = best_move2
+                    if best_move == 1:
+                        break
+            return best_move
+
+        else:
+            best_move = 100000   # make sure that this value is overwritten
+            for i in range(len(connect4.playingField)):
+                if not connect4.play_turn(i):  # AI cannot make this turn
+                    continue
+                current_score = connect4.AI_make_turn(connect4, True)
+                connect4.playingField[i] = connect4.playingField[i][:-1]
+                best_move = min(best_move, current_score)
+            return best_move
+        """
+
+        return random.randrange(1, 8)
 
     def save_game(self, name: str):
         file_names = ""
@@ -60,7 +102,7 @@ class Connect4:
         """get parameters from a saved game and load them onto the Connect4 Class"""
         tokens = 0
         with open(f'Save_Games/{name}.txt', 'r') as file:
-            data = (file.read()).split(';')  # (6 lines for rows, 2 lines for players.)
+            data = (file.read()).split(';')  # (7 lines for columns, 2 lines for players.)
             print(data)
             for i in range(self.columns):
                 tempString = data[i].strip('[]').split(', ')
@@ -115,7 +157,6 @@ def check_win(playBoard: Connect4) -> bool:
 
     # visit each point that has a valid symbol and walk diagonal paths with same symbol
     # don't start from already visited nodes
-    visited_symbols = []
     for i in range(playBoard.columns):
         # a possible diagonal can only be a winning diagonal
         # if one point has a y coordinate of 4
@@ -185,8 +226,8 @@ def path_traversal(x: int, y: int, path: str) -> int:
 
 def find_boyer_moore(text: list, pattern: list) -> bool:
     n, m = len(text), len(pattern)
-    if m == 0:
-        return False  # if pattern doesnt exist
+    if m == 0 or m > n:
+        return False  # if pattern doesnt exist or is longer than text
 
     # create dictionary  for each letter in pattern
     last = {}

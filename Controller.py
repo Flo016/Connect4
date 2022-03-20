@@ -1,5 +1,6 @@
 from Model import Connect4, check_win
 from View import View
+from copy import deepcopy
 
 
 class Controller:
@@ -13,20 +14,31 @@ class Controller:
                 game.load_game(self.ask_input(self.view.choose_save_game))
             else:
                 # TODO maybe add custom token symbols?? or even  r a n d o m  ones...
-                i = 1
                 if self.ask_input(self.view.AI_opponent):
-                    game.create_player(i, i, True)
-                    i = 2
+
+                    i = 0
                     game.create_player(i, i, self.ask_input(self.view.AI_match))
+                    i = 1
+                    game.create_player(i, i, True)
                 else:
                     for i in range(2):
                         game.create_player(i, i, False)
 
             """actually play the game"""
             self.view.print_playingField(game)
-            while not check_win(game) and not game.check_draw(game.tokens):
+            while not check_win(game) and not game.check_draw():
 
-                self.view.print_players_turn(game.current_player)   # show playing field
+                self.view.print_players_turn(game.current_player)   # print who has to play.
+
+                if game.players[game.current_player].is_AI:   # if current player is AI, calculate best turn.
+                    game_copy = deepcopy(game)
+
+                    print(game_copy.best_column)
+                    while not game.play_turn(game.AI_make_turn()):
+                        continue
+                    self.view.print_playingField(game)
+                    continue
+
                 player_turn = self.ask_input(self.view.choose_column)   # ask for player turn
                 if player_turn == "s":   # save game
                     if self.ask_input(self.view.confirmation):
@@ -34,8 +46,9 @@ class Controller:
                         game.save_game(name)
                     break
                 game.play_turn(int(player_turn))
-                self.view.print_playingField(game)
-            if game.check_draw(game.tokens):
+                self.view.print_playingField(game)    # show playing field
+
+            if game.check_draw():
                 self.view.print_draw()
             elif check_win(game):
                 self.view.print_winner((game.current_player + 1) % 2)
@@ -63,6 +76,7 @@ class Controller:
             return answer
 
         def check_names(input_query: str, valid_inputs: list) -> str:
+            """checks valid names"""
             answer = input(input_query)
             while True:
                 name_correct = True
