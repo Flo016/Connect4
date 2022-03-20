@@ -7,7 +7,6 @@ class View:
         """saves reoccurring questions or valid inputs"""
         self.yes_no = ["Y", "y", "YES", "YEs", "Yes", "yes", "N", "n", "NO", "No", "no"]
         self.true = ["Y", "y", "YES", "YEs", "Yes", "yes"]
-        self.lastPrintedLines = 0   # tracks how many lines have been printed since last print.
         self.save_games = []
         self.welcome_string = "\n" \
                               "\n" \
@@ -61,10 +60,6 @@ class View:
                     rows = rows + symbols[None] + "|"
         rows += "\n ____ ____ ____ ____ ____ ____ ____"
         rows += "\n   I   II  III   IV    V   VI  VII"
-
-        # TODO Erase previous lines
-
-        self.lastPrintedLines = 8
         return print(self.welcome_string + rows, end="\r")
 
     @staticmethod
