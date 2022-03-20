@@ -1,6 +1,5 @@
-from Model import Connect4, check_win
+from Model import Connect4
 from View import View
-from copy import deepcopy
 
 
 class Controller:
@@ -26,15 +25,13 @@ class Controller:
 
             """actually play the game"""
             self.view.print_playingField(game)
-            while not check_win(game) and not game.check_draw():
+            while not game.check_win() and not game.check_draw():
 
-                self.view.print_players_turn(game.current_player)   # print who has to play.
+                self.view.print_players_turn(game.current_player,
+                                             game.players[game.current_player].is_AI)   # print who has to play.
 
                 if game.players[game.current_player].is_AI:   # if current player is AI, calculate best turn.
-                    game_copy = deepcopy(game)
-
-                    print(game_copy.best_column)
-                    while not game.play_turn(game.AI_make_turn()):
+                    while not game.play_turn(game.AI_make_turn()+1):
                         continue
                     self.view.print_playingField(game)
                     continue
@@ -48,11 +45,15 @@ class Controller:
                 game.play_turn(int(player_turn))
                 self.view.print_playingField(game)    # show playing field
 
+            # check how the game was won and print a message.
             if game.check_draw():
                 self.view.print_draw()
-            elif check_win(game):
-                self.view.print_winner((game.current_player + 1) % 2)
+            elif game.check_win():
+                game.swap_players()
+                self.view.print_winner(game.current_player,
+                                       game.players[game.current_player].is_AI)
 
+            # check if player wants to play another game.
             if not (self.ask_input(self.view.another_game)):
                 self.view.print_goodbye()
                 break

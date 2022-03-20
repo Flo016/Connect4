@@ -68,16 +68,20 @@ class View:
         columns.append('s')   # for saving the game.
         return ["Select a column: ", columns]
 
-    def print_players_turn(self, player: int):
+    def print_players_turn(self, player: int, is_AI: bool):
         self.lastPrintedLines += 1
+        if is_AI:
+            return print("AI " + str(player + 1) + ", it's your turn!")
         return print("Player " + str(player + 1) + ", it's your turn!")
 
     def print_draw(self):
         self.lastPrintedLines += 1
         return print("The Game has ended in a draw!")
 
-    def print_winner(self, player: int):
+    def print_winner(self, player: int, is_AI: bool):
         self.lastPrintedLines += 1
+        if is_AI:
+            return print("AI " + str(player + 1) + " has won the game!")
         return print("Player " + str(player + 1) + " has won the game!")
 
     def another_game(self):
