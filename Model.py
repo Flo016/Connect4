@@ -117,17 +117,19 @@ def check_win(playBoard: Connect4) -> bool:
     # don't start from already visited nodes
     visited_symbols = []
     for i in range(playBoard.columns):
-        for j in range(len(playBoard.playingField[i])):
-            if playBoard.playingField[i][j] == symbol_to_look_for and (i, j) not in visited_symbols:
-                result = check_diagonals(i, j, visited_symbols, paths,
-                                         symbol_to_look_for, playBoard)
-                if result[0]:
-                    return True
-                visited_symbols = result[1]
+        # a possible diagonal can only be a winning diagonal
+        # if one point has a y coordinate of 4
+        if len(playBoard.playingField[i]) < 4:
+            continue
+        j = 4
+        if playBoard.playingField[i][j] == symbol_to_look_for:
+            if check_diagonals(i, j, paths, symbol_to_look_for, playBoard):
+                return True
+
     return False
 
 
-def check_diagonals(i: int, j: int, visited_symbols: list, paths: list,
+def check_diagonals(i: int, j: int, paths: list,
                     symbol_to_look_for: str, playBoard: Connect4):
     """checks from top left to bottom right and vice versa for 4 symbols in a row"""
     for path in paths:
@@ -136,14 +138,13 @@ def check_diagonals(i: int, j: int, visited_symbols: list, paths: list,
             try:
                 x, y = path_traversal(i, j, path[k])
                 while playBoard.playingField[x][y] == symbol_to_look_for:
-                    visited_symbols.append((x, y))
                     length += 1
                     x, y = path_traversal(x, y, path[k])
             except IndexError:
                 pass  # index error occurs when point (x, y) doesn't exist, so we stop
         if length > 3:
-            return [True]
-    return [False, visited_symbols]
+            return True
+    return False
 
 
 def path_traversal(x: int, y: int, path: str) -> int:
