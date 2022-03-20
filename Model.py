@@ -56,6 +56,7 @@ class Connect4:
                     if self.check_win():
                         self.playingField[i] = self.playingField[i][:-1]
                         if j == 0:
+                            self.swap_players()
                             return i
                         return i
                     self.playingField[i] = self.playingField[i][:-1]

@@ -9,18 +9,27 @@ class View:
         self.true = ["Y", "y", "YES", "YEs", "Yes", "yes"]
         self.lastPrintedLines = 0   # tracks how many lines have been printed since last print.
         self.save_games = []
+        self.welcome_string = "\n" \
+                              "\n" \
+                              "\n" \
+                              "\n" \
+                              "\n" \
+                              "*************************************\n" \
+                              "*             Connect 4             *\n" \
+                              "*************************************\n" \
+                              "*  enter 's' during a game to save! *\n"
 
     def load_game(self):
         self.lastPrintedLines += 1   # answer should be written in same line.
         return ["Do you want to load a previous game? [y/n]: ", self.yes_no, self.true]
 
-    def welcome(self):
-        self.lastPrintedLines += 5
-        return print("Welcome to Connect 4! \n"
-                     "The Game is played by typing the column \n"
-                     "That you want to put your token in!\n"
-                     "The first one to Connect 4 of his tokens shall be \n"
-                     "the declared Winner.")
+    @staticmethod
+    def welcome():
+        return print("*************************************\n"
+                     "*             Connect 4             *\n"
+                     "*************************************\n"
+                     "*  enter 's' during a game to save! *\n"
+                     "")
 
     def AI_opponent(self):
         self.lastPrintedLines += 1
@@ -58,7 +67,7 @@ class View:
         # TODO Erase previous lines
 
         self.lastPrintedLines = 8
-        return print(rows)
+        return print(self.welcome_string + rows, end="\r")
 
     def choose_column(self):
         self.lastPrintedLines += 1
