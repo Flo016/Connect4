@@ -121,7 +121,7 @@ def check_win(playBoard: Connect4) -> bool:
         # if one point has a y coordinate of 4
         if len(playBoard.playingField[i]) < 4:
             continue
-        j = 4
+        j = 3
         if playBoard.playingField[i][j] == symbol_to_look_for:
             if check_diagonals(i, j, paths, symbol_to_look_for, playBoard):
                 return True
