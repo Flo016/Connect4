@@ -1,12 +1,12 @@
 import random
-
+from os import remove as remove_file
 
 class Connect4:
     """ Creates a game of Connect 4 with functions to interact with the game"""
 
     def __init__(self):
         """ Builds Connect 4 Framework and stores current player"""
-        self.save_files = self.check_saves()
+        self.save_files = self.check_update_saves()
         self.rows = 6
         self.columns = 7
         self.playingField = [[] for _ in range(self.columns)]
@@ -14,6 +14,8 @@ class Connect4:
         self.current_player = 0
         self.tokens = 0
         self.best_column = None
+
+    # player functions and class
 
     class Player:
         """ Creates a Player instance with ID and a PlayerToken Symbol"""
@@ -25,6 +27,11 @@ class Connect4:
 
     def create_player(self, ID: int, symbol: int, is_AI: bool):
         self.players.append(self.Player(ID, symbol, is_AI))
+    
+    def swap_players(self):
+        self.current_player = (self.current_player + 1) % 2
+
+    # make a turn functions:
 
     def play_turn(self, column: int) -> bool:
         """ pushes the current player symbol onto the column"""
@@ -36,33 +43,25 @@ class Connect4:
         self.swap_players()
         return True
 
-    def check_draw(self) -> bool:
-        if self.tokens == (self.rows * self.columns):
-            return True
-        return False
-    
-    def swap_players(self):
-        self.current_player = (self.current_player + 1) % 2
-
     def AI_make_turn(self):
         """Checks if it can win next turn, 
            if it can't it tries to deny an enemy win 
            if it can't returns random column"""
         for j in range(2):
             for i in range(len(self.playingField)):
-                for _ in range(self.rows - len(self.playingField[i])):
-                    self.playingField[i].append(self.players[self.current_player].symbol)
-                    self.swap_players()
-                    if self.check_win():
-                        self.playingField[i] = self.playingField[i][:-1]
-                        if j == 0:
-                            self.swap_players()
-                            return i
-                        return i
+                self.playingField[i].append(self.players[self.current_player].symbol)
+                self.swap_players()
+                if self.check_win():
                     self.playingField[i] = self.playingField[i][:-1]
-                    self.swap_players()
+                    if j == 0:
+                        self.swap_players()
+                    return i
+                self.swap_players()
+                self.playingField[i] = self.playingField[i][:-1]
             self.swap_players()
         return random.randrange(0, 7)
+
+    # file management functions:
 
     def save_game(self, name: str):
         file_names = ""
@@ -88,7 +87,6 @@ class Connect4:
         tokens = 0
         with open(f'Save_Games/{name}.txt', 'r') as file:
             data = (file.read()).split(';')  # (7 lines for columns, 2 lines for players.)
-            print(data)
             for i in range(self.columns):
                 tempString = data[i].strip('[]').split(', ')
                 for j in range(len(tempString)):
@@ -105,21 +103,55 @@ class Connect4:
         self.current_player = tokens % len(self.players)
         self.tokens = tokens
 
+
     @staticmethod
-    def check_saves() -> bool:
+    def check_update_saves() -> bool:
+        # check and return if savegames exist.
+        # Should savegames exist, refresh save_game list in case files got deleted.
         try:
+            files_to_check = None
             with open('Save_Games/SaveGame_Names.txt', 'r') as file:
-                file.close()
-            return True
+                files_to_check = file.read().split(';')
         except FileNotFoundError:
             return False
+        file_names = ""
+        print(files_to_check)
+        for pot_file in files_to_check:
+            try:
+                with open(f'Save_Games/{pot_file}.txt', 'r') as file:
+                    file_names += ';' + str(pot_file) 
+            except FileNotFoundError:
+                continue
+        if len(file_names) == 0:
+            return False
+        with open('Save_Games/SaveGame_Names.txt', 'w') as file:
+            file.write(file_names[1:])
+        return True
 
+
+    def delete_save(self, file_name):
+        try:
+            with open(f'Save_Games/{file_name}.txt', 'r') as file:
+                file.close()
+            remove_file(f'Save_Games/{file_name}.txt')
+            
+        except FileNotFoundError:
+            pass
+        self.check_update_saves()
+
+    # end game functions:
+
+    def check_draw(self) -> bool:
+        if self.tokens == (self.rows * self.columns):
+            return True
+        return False
+    
     def check_win(self) -> bool:
         self.swap_players()
         symbol_to_look_for = self.players[self.current_player].symbol   # get symbol from last turn
         self.swap_players()
         pattern_to_look_for = [symbol_to_look_for] * 4  # [0, 0, 0, 0]
-        if self.tokens < 7:  # game cannot be won before turn 7
+        if self.tokens < 5:  # game cannot be won before turn 7, The AI predicts a move, so it has to start 1 turn earlier
             return False
         for column in self.playingField:
             if len(column) > 3:  # check each column with > 3 tokens
