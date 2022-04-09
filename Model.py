@@ -115,7 +115,6 @@ class Connect4:
         except FileNotFoundError:
             return False
         file_names = ""
-        print(files_to_check)
         for pot_file in files_to_check:
             try:
                 with open(f'Save_Games/{pot_file}.txt', 'r') as file:
