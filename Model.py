@@ -43,21 +43,32 @@ class Connect4:
         self.swap_players()
         return True
 
+    def delete_turn(self, column: int) -> bool:
+        """used for AI turn to delete the imaginary turn that was made"""
+        column -= 1
+        print(self.playingField)
+        self.playingField[column] = self.playingField[column][:-1]
+        print(self.playingField)
+        self.tokens -= 1
+        self.swap_players()
+
+
     def AI_make_turn(self):
         """Checks if it can win next turn, 
            if it can't it tries to deny an enemy win 
-           if it can't returns random column"""
+           if it can't returns random column
+           i is increased by 1 because 1 is taken away at play_turn."""
         for j in range(2):
-            for i in range(len(self.playingField)):
-                self.playingField[i].append(self.players[self.current_player].symbol)
-                self.swap_players()
+            for i in range(1,len(self.playingField)+1):
+                if not self.play_turn(i):
+                    continue
+                print("HALLO")
                 if self.check_win():
-                    self.playingField[i] = self.playingField[i][:-1]
-                    if j == 0:
+                    self.delete_turn(i)
+                    if j == 1:
                         self.swap_players()
                     return i
-                self.swap_players()
-                self.playingField[i] = self.playingField[i][:-1]
+                self.delete_turn(i)
             self.swap_players()
         return random.randrange(0, 7)
 

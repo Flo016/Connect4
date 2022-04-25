@@ -37,7 +37,7 @@ class Controller:
 
                 if game.players[game.current_player].is_AI:   # if current player is AI, calculate best turn.
                     # to make game more authentic, AI does random turns, it has a while loop until the AI makes a valid turn
-                    while not game.play_turn(game.AI_make_turn()+1):   
+                    while not game.play_turn(game.AI_make_turn()):   
                         continue
                     view.print_playingField(game)
                     continue
