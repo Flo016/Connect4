@@ -62,7 +62,6 @@ class Connect4:
             for i in range(1,len(self.playingField)+1):
                 if not self.play_turn(i):
                     continue
-                print("HALLO")
                 if self.check_win():
                     self.delete_turn(i)
                     if j == 1:
